@@ -167,60 +167,60 @@ src/
 └── orders/
     ├── orders.module.ts                 # Módulo CQRS de pedidos
     │
-    ├── enums/
-    │   └── order-status.enum.ts         # Estados: CREATED, PAID, SHIPPED, DELIVERED, CANCELLED
+    ├── common/                          # Elementos compartidos del dominio
+    │   └── enums/
+    │       └── order-status.enum.ts     # Estados: CREATED, PAID, SHIPPED, DELIVERED, CANCELLED
     │
-    ├── write-models/                    # Modelo de escritura (PostgreSQL / TypeORM)
-    │   ├── order.entity.ts
-    │   └── order-item.entity.ts
+    ├── models/                          # Modelos de datos de ambas bases
+    │   ├── write-models/                # Entidades TypeORM → PostgreSQL
+    │   │   ├── order.entity.ts
+    │   │   └── order-item.entity.ts
+    │   └── read-models/                 # Schemas Mongoose → MongoDB
+    │       └── order-read.schema.ts     # Proyección desnormalizada con índices
     │
-    ├── read-models/                     # Modelo de lectura (MongoDB / Mongoose)
-    │   └── order-read.schema.ts         # Proyección desnormalizada con índices
+    ├── application/                     # Casos de uso CQRS
+    │   ├── commands/
+    │   │   ├── impl/                    # Definición de comandos
+    │   │   │   ├── create-order.command.ts
+    │   │   │   ├── change-order-status.command.ts
+    │   │   │   ├── add-product.command.ts
+    │   │   │   └── remove-product.command.ts
+    │   │   └── handlers/                # Lógica de escritura + publicación de eventos
+    │   │       ├── create-order.handler.ts
+    │   │       ├── change-order-status.handler.ts
+    │   │       ├── add-product.handler.ts
+    │   │       └── remove-product.handler.ts
+    │   ├── events/
+    │   │   ├── impl/                    # Definición de eventos de dominio
+    │   │   │   ├── order-created.event.ts
+    │   │   │   ├── order-status-changed.event.ts
+    │   │   │   ├── product-added.event.ts
+    │   │   │   └── product-removed.event.ts
+    │   │   └── handlers/                # Proyecciones: sincronizan PostgreSQL → MongoDB
+    │   │       ├── order-created.handler.ts
+    │   │       ├── order-status-changed.handler.ts
+    │   │       ├── product-added.handler.ts
+    │   │       └── product-removed.handler.ts
+    │   └── queries/
+    │       ├── impl/                    # Definición de queries
+    │       │   ├── get-order-by-id.query.ts
+    │       │   ├── list-orders-by-customer.query.ts
+    │       │   ├── list-orders-by-status.query.ts
+    │       │   └── get-sales-summary.query.ts
+    │       └── handlers/                # Lógica de lectura desde MongoDB
+    │           ├── get-order-by-id.handler.ts
+    │           ├── list-orders-by-customer.handler.ts
+    │           ├── list-orders-by-status.handler.ts
+    │           └── get-sales-summary.handler.ts
     │
-    ├── commands/
-    │   ├── impl/                        # Definición de comandos
-    │   │   ├── create-order.command.ts
-    │   │   ├── change-order-status.command.ts
-    │   │   ├── add-product.command.ts
-    │   │   └── remove-product.command.ts
-    │   └── handlers/                    # Lógica de escritura + publicación de eventos
-    │       ├── create-order.handler.ts
-    │       ├── change-order-status.handler.ts
-    │       ├── add-product.handler.ts
-    │       └── remove-product.handler.ts
-    │
-    ├── events/
-    │   ├── impl/                        # Definición de eventos de dominio
-    │   │   ├── order-created.event.ts
-    │   │   ├── order-status-changed.event.ts
-    │   │   ├── product-added.event.ts
-    │   │   └── product-removed.event.ts
-    │   └── handlers/                    # Proyecciones: sincronizan PostgreSQL → MongoDB
-    │       ├── order-created.handler.ts
-    │       ├── order-status-changed.handler.ts
-    │       ├── product-added.handler.ts
-    │       └── product-removed.handler.ts
-    │
-    ├── queries/
-    │   ├── impl/                        # Definición de queries
-    │   │   ├── get-order-by-id.query.ts
-    │   │   ├── list-orders-by-customer.query.ts
-    │   │   ├── list-orders-by-status.query.ts
-    │   │   └── get-sales-summary.query.ts
-    │   └── handlers/                    # Lógica de lectura desde MongoDB
-    │       ├── get-order-by-id.handler.ts
-    │       ├── list-orders-by-customer.handler.ts
-    │       ├── list-orders-by-status.handler.ts
-    │       └── get-sales-summary.handler.ts
-    │
-    ├── dto/                             # Validación de entrada (class-validator)
-    │   ├── create-order.dto.ts
-    │   ├── change-status.dto.ts
-    │   └── add-product.dto.ts
-    │
-    └── controllers/
-        ├── orders-command.controller.ts # Endpoints de escritura (POST, PATCH, DELETE)
-        └── orders-query.controller.ts   # Endpoints de lectura (GET)
+    └── http/                            # Capa de entrada HTTP
+        ├── controllers/
+        │   ├── orders-command.controller.ts  # Endpoints de escritura (POST, PATCH, DELETE)
+        │   └── orders-query.controller.ts    # Endpoints de lectura (GET)
+        └── dto/                         # Validación de entrada (class-validator)
+            ├── create-order.dto.ts
+            ├── change-status.dto.ts
+            └── add-product.dto.ts
 ```
 
 ---
