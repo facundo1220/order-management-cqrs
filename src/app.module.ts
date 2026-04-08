@@ -3,8 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersModule } from './orders/orders.module';
-import { OrderItem } from './orders/write-models/order-item.entity';
-import { Order } from './orders/write-models/order.entity';
+import { OrderItem } from './orders/models/write-models/order-item.entity';
+import { Order } from './orders/models/write-models/order.entity';
 
 @Module({
   imports: [
